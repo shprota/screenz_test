@@ -14,7 +14,7 @@ export default class BookGenreController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.get(`${this.path}/`, checkAuth, BookGenreController.listGenres);
+        this.router.get(`${this.path}/`, BookGenreController.listGenres);
         this.router.post(`${this.path}/`, checkAuth, BookGenreController.checkPermissions('admin'), BookGenreController.createGenre);
         this.router.put(`${this.path}/:id`, checkAuth, BookGenreController.checkPermissions('admin'), BookGenreController.updateGenre);
         this.router.patch(`${this.path}/:id`, checkAuth, BookGenreController.checkPermissions('admin'), BookGenreController.updateGenre);
@@ -48,7 +48,11 @@ export default class BookGenreController implements Controller {
 
     private static async updateGenre(req: Request, res: Response, next: NextFunction) {
         try {
-            return res.json(await BookGenre.find({}))
+            const genre = await BookGenre.findByIdAndUpdate(req.params.id, {$set: req.body}, {new: true});
+            if (!genre) {
+                return res.status(400).end();
+            }
+            return res.json(genre.toJSON());
         } catch (e) {
             next(e);
         }
@@ -56,10 +60,14 @@ export default class BookGenreController implements Controller {
 
     private static async deleteGenre(req: Request, res: Response, next: NextFunction) {
         try {
-            return res.json(await BookGenre.find({}))
+            const genre = await BookGenre.findByIdAndDelete(req.params.id);
+            if (!genre) {
+                return res.status(400).end();
+            }
+            // TODO: Handle orphaned books?
+            return res.json({success: true});
         } catch (e) {
             next(e);
         }
     }
 }
-
