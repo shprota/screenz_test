@@ -1,0 +1,98 @@
+{
+  "name": "zorgback",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "pm2-dev start app.js",
+    "dev": "ts-node-dev --respawn --transpileOnly server.ts",
+    "test": "nyc mocha"
+  },
+  "nyc": {
+    "include": [
+      "**/*.ts",
+      "**/*.tsx"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true
+  },
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "bluebird": "^3.5.3",
+    "chalk": "^2.4.1",
+    "class-validator": "^0.9.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "dotenv": "^6.1.0",
+    "envalid": "^4.1.4",
+    "errorhandler": "^1.5.0",
+    "express": "~4.16.0",
+    "express-status-monitor": "^1.2.3",
+    "express-validator": "^5.3.0",
+    "jsonwebtoken": "^8.4.0",
+    "mongoose": "^5.4.5",
+    "mongoose-auto-increment-reworked": "^1.2.1",
+    "mongoose-dynamic-schemas": "^1.2.6",
+    "mongoose-error": "^1.0.1",
+    "mongoose-gridfs": "^0.6.2",
+    "mongoose-paginate-v2": "^1.0.16",
+    "mongoose-unique-validator": "^2.0.2",
+    "morgan": "~1.9.0",
+    "multer": "^1.4.1",
+    "multiparty": "^4.2.1",
+    "passport": "latest",
+    "passport-google-oauth": "^1.0.0",
+    "passport-http-bearer": "latest",
+    "passport-local": "^1.0.0",
+    "read-excel-file": "^2.0.7",
+    "request": "^2.88.0",
+    "transliteration": "^2.1.2",
+    "validator": "latest",
+    "express-session": "latest",
+    "connect-redis": "latest"
+  },
+  "devDependencies": {
+    "@types/bcrypt-nodejs": "0.0.30",
+    "@types/bluebird": "^3.5.25",
+    "@types/chai": "^4.1.7",
+    "@types/connect-redis": "0.0.8",
+    "@types/cookie-parser": "^1.4.1",
+    "@types/dotenv": "^6.1.0",
+    "@types/errorhandler": "0.0.32",
+    "@types/express": "^4.16.0",
+    "@types/express-session": "^1.15.11",
+    "@types/jsonwebtoken": "^8.3.0",
+    "@types/mocha": "^5.2.5",
+    "@types/mongoose": "^5.3.7",
+    "@types/mongoose-auto-increment": "^5.0.30",
+    "@types/mongoose-paginate-v2": "^1.0.0",
+    "@types/mongoose-unique-validator": "^1.0.1",
+    "@types/morgan": "^1.7.35",
+    "@types/multiparty": "0.0.31",
+    "@types/node": "^10.12.18",
+    "@types/passport": "^1.0.0",
+    "@types/passport-http-bearer": "^1.0.33",
+    "@types/passport-local": "^1.0.33",
+    "@types/sinon": "^7.0.3",
+    "@types/sinon-mongoose": "^1.3.9",
+    "@types/validator": "^10.9.0",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
+    "sinon": "^7.1.1",
+    "sinon-mongoose": "^2.2.1",
+    "source-map-support": "^0.5.9",
+    "ts-node-dev": "^1.0.0-pre.32",
+    "typescript": "^3.2.2"
+  }
+}

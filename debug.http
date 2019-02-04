@@ -1,0 +1,52 @@
+# For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection).
+#
+# Following HTTP Request Live Templates are available:
+# * 'gtrp' and 'gtr' create a GET request with or without query parameters;
+# * 'ptr' and 'ptrp' create a POST request with a simple or parameter-like body;
+# * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
+
+POST http://localhost:3000/api/register
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin",
+  "dummyval": "123qwe"
+}
+
+###
+
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+###
+
+POST http://localhost:3000/api/token
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+###
+
+GET http://localhost:3000/api/user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjMzVlNjQ5NDNkNjE1NWRmNTA1MDdlMyIsImlhdCI6MTU0NzAzNjUyNiwiZXhwIjoxNTQ3MDk2NTI2fQ.9qX8bGqlXcg85PnkU5x_nIbuNn2fqeRd4kaglNefZSI
+
+###
+
+GET http://localhost:3000/api/renew_token
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjNTg4NGI3MGFkMTRjNWUyMmUxNDgzNiIsImlhdCI6MTU0OTMwNTAyMSwiZXhwIjoxNTU1MzA1MDIxfQ.4H5GUc6Z4go-k13h7NqOZ2PJ0wwbF6oTcxecA9CsNS0
+
+###
+
+GET http://localhost:3000/api/renew_token
+Cookie: connect.sid=s%3AKJRf_vC77iLSu3F6EmczkoPnAsnLfTtN.qvPNf96aNkXrnMqHmM2DN9i%2Bn7pwcI3c8x2KwcLzbwM; Path=/;
+
+###
