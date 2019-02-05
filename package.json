@@ -1,6 +1,6 @@
 {
-  "name": "zorgback",
-  "version": "0.0.0",
+  "name": "screenz",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "ts-node-dev --respawn --transpileOnly server.ts",
