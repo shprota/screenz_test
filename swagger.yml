@@ -1,0 +1,691 @@
+openapi: "3.0.0"
+info:
+  description: "This is a sample server for Screenz test project. For this sample, you can use the user/password pairs `admin/admin` and `client/client` to test the authorization."
+  version: "1.0.0"
+  title: "Screenz Test Project"
+  contact:
+    email: "shprota@gmail.com"
+
+servers:
+  - url: http://screenz.shprota.com/api
+    description: Example cloud server
+  - url: http://localhost:3000/api
+    description: Locally running server
+tags:
+  - name: "auth"
+    description: "Gain access"
+  - name: "user"
+    description: "Operations about user"
+  - name: "genres"
+    description: "Access book genres"
+  - name: "books"
+    description: "Access the books"
+paths:
+  /register:
+    post:
+      tags:
+        - auth
+      summary: "Register new user"
+      description: "New user will be assigned the `client` role. Changing the user role is out of the scope of this test project"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Authentication'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Authentication'
+      responses:
+        200:
+          description: "Authentication successful"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        422:
+          description: "Invalid registration data. Any validation error"
+        500:
+          description: "Any other error"
+  /login:
+    post:
+      tags:
+        - auth
+      summary: "Log in"
+      description: "Supply username and password"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Authentication'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Authentication'
+      responses:
+        200:
+          description: "Login successful"
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: connect.sid=s%3Alst292Zasi0HLXIGdPIvKd1p6XgrOKlN.MOx18NHwpqw9oAu1x%2FNQKvH5r5PmFwx0TtO5pYdakRM; Path=/; HttpOnly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        401:
+          description: "Invalid user data. Any validation error"
+        500:
+          description: "Any other error"
+  /token:
+    post:
+      tags:
+        - auth
+      summary: "Log in and obtain the JWT bearer token"
+      description: "Supply username and password"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Authentication'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Authentication'
+      responses:
+        200:
+          description: "Token and token expiration time in ms"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        401:
+          description: "Invalid user data. Any validation error"
+        500:
+          description: "Any other error"
+
+  /renew_token:
+    get:
+      tags:
+        - auth
+      summary: "Renew the JWT token"
+      description: "Supply current token for authorization"
+      responses:
+        200:
+          description: "Token and token expiration time in ms"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        401:
+          description: "Invalid user data. Any validation error"
+        500:
+          description: "Any other error"
+
+  /user:
+    get:
+      tags:
+        - user
+      summary: "List users"
+      description: "Returns the list of registered users"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfUsers'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        500:
+          description: "Any other error"
+
+    post:
+      tags:
+        - user
+      summary: Create new user
+      description: Only admin is allowed
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        500:
+          description: "Any other error"
+
+  /user/{id}:
+    put:
+      tags:
+        - user
+      summary: "Update user"
+      description: "Updates the user with specified ID"
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: string
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        400:
+          description: "User not found"
+        500:
+          description: "Any other error"
+    delete:
+      tags:
+        - user
+      summary: "Delete user"
+      description: "Deletes the user with specified ID"
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: string
+            format: int64
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        400:
+          description: "User not found"
+        500:
+          description: "Any other error"
+
+  /genres:
+    get:
+      tags:
+        - genres
+      summary: "List genres"
+      description: "Returns the list of genres"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfGenres'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        500:
+          description: "Any other error"
+
+    post:
+      tags:
+        - genres
+      summary: Create new genre
+      description: Only admin is allowed
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateGenre'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGenre'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        500:
+          description: "Any other error"
+
+  /genres/{id}:
+    put:
+      tags:
+        - genres
+      summary: "Update genre"
+      description: "Updates the genre with specified ID"
+      parameters:
+        - name: id
+          in: path
+          description: Genre ID
+          required: true
+          schema:
+            type: string
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateGenre'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGenre'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        400:
+          description: "Genre not found"
+        500:
+          description: "Any other error"
+    delete:
+      tags:
+        - genres
+      summary: "Delete genre"
+      description: "Deletes the genre with specified ID"
+      parameters:
+        - name: id
+          in: path
+          description: Genre ID
+          required: true
+          schema:
+            type: string
+            format: int64
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        400:
+          description: "Genre not found"
+        500:
+          description: "Any other error"
+
+  /books:
+    get:
+      tags:
+        - books
+      summary: "List books"
+      description: "Returns the list of books"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfBooks'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        500:
+          description: "Any other error"
+
+    post:
+      tags:
+        - books
+      summary: Create new book
+      description: Only admin is allowed
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateBook'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBook'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        500:
+          description: "Any other error"
+
+  /books/{id}:
+    put:
+      tags:
+        - books
+      summary: "Update book"
+      description: "Updates the book with specified ID"
+      parameters:
+        - name: id
+          in: path
+          description: Book ID
+          required: true
+          schema:
+            type: string
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateBook'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBook'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        400:
+          description: "Book not found"
+        500:
+          description: "Any other error"
+    delete:
+      tags:
+        - books
+      summary: "Delete book"
+      description: "Deletes the book with specified ID"
+      parameters:
+        - name: id
+          in: path
+          description: Book ID
+          required: true
+          schema:
+            type: string
+            format: int64
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        401:
+          description: "Not logged in"
+        403:
+          description: "Admin permission required"
+        400:
+          description: "Book not found"
+        500:
+          description: "Any other error"
+
+  /books/review/{id}:
+    post:
+      tags:
+        - books
+      summary: Submit book review
+      description: "Allowed roles: admin and client"
+      parameters:
+        - name: id
+          in: path
+          description: Book ID
+          required: true
+          schema:
+            type: string
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateReview'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReview'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        400:
+          description: "Book not found"
+        401:
+          description: "Not logged in"
+        500:
+          description: "Any other error"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 5c596cf84c406319778f6bcc
+        username:
+          type: string
+          example: johndoe
+        role:
+          type: string
+          enum: [admin,client]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ArrayOfUsers:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+
+    Authentication:
+      type: object
+      properties:
+        username:
+          type: string
+          example: johndoe
+        password:
+          type: string
+          format: password
+          example: 123456
+
+    CreateUser:
+      type: object
+      properties:
+        username:
+          type: string
+          example: johndoe
+        password:
+          type: string
+          format: password
+          example: 123456
+        role:
+          type: string
+          enum: [admin,client]
+
+    Success:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjNTk2Y2Y4NGM0MDYzMTk3NzhmNmJjYyIsImlhdCI6MTU0OTM2NDQ3MiwiZXhwIjoxNTU1MzY0NDcyfQ.Gts0dICbJsntmFeaDfBSqIpQIioHDlnUbN3vhqa-Tog"
+        expiresIn:
+          description: Token expiration time in ms
+          type: integer
+          example: 6000000
+        user:
+          $ref: '#/components/schemas/User'
+
+    Genre:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 5c596cf84c406319778f6bcc
+        name:
+          type: string
+          example: "Fiction"
+
+    CreateGenre:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Fiction"
+
+    ArrayOfGenres:
+      type: array
+      items:
+        $ref: '#/components/schemas/Genre'
+
+    Review:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: int64
+          example: 5c596cf84c406319778f6bcc
+        user:
+          type: string
+          format: int64
+          example: 5c596cf84c406319778f6bcc
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 7
+        status:
+          type: string
+          enum: ['Submitted', 'Rejected', 'Accepted']
+        description:
+          type: string
+          example: I loved reading this book to my grandchildren
+
+    CreateReview:
+      type: object
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 7
+        description:
+          type: string
+          example: I loved reading this book to my grandchildren
+
+    Book:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: int64
+          example: 5c596cf84c406319778f6bcc
+        name:
+          type: string
+          example: "The Catcher in the Rye"
+        genre:
+          type: string
+          format: int64
+          example: 5c596cf84c406319778f6bcc
+        description:
+          type: string
+          example: The Catcher in the Rye is a story by J. D. Salinger, partially published in serial form in 1945–1946 and as a novel in 1951. A classic novel originally published for adults, it has since become popular among adolescent readers for its themes of angst and alienation.
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+    CreateBook:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "The Catcher in the Rye"
+        genre:
+          type: string
+          format: int64
+          example: 5c596cf84c406319778f6bcc
+        description:
+          type: string
+          example: The Catcher in the Rye is a story by J. D. Salinger, partially published in serial form in 1945–1946 and as a novel in 1951. A classic novel originally published for adults, it has since become popular among adolescent readers for its themes of angst and alienation.
+
+    ArrayOfBooks:
+      type: array
+      items:
+        $ref: '#/components/schemas/Book'
+
+
+security:
+  - cookieAuth: []
+  - bearerAuth: []

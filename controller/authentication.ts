@@ -29,7 +29,7 @@ class AuthenticationController implements Controller {
         const data: RegisterDto = req.body;
         try {
             let user: IUserDocument = new User(data);
-            user.role = 'admin';
+            user.role = 'client';
             user = await user.save();
             return res.json({
                 token: this.makeToken(user),
@@ -52,7 +52,7 @@ class AuthenticationController implements Controller {
     }
 
     private async login(req: express.Request, res: express.Response) {
-        res.send('ok');
+        res.json({success: true});
     }
 
     private renewToken(req: express.Request, res: express.Response) {

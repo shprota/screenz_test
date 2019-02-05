@@ -5,7 +5,6 @@ import errorHandler from 'errorhandler';
 import prodErrorHandler from './middleware/error';
 import session from "express-session";
 import connect_redis from "connect-redis";
-
 import mongoose from 'mongoose';
 import passport from 'passport';
 import {passportConfig} from "./config/passport";
@@ -18,6 +17,9 @@ import expressValidator from "express-validator";
 
 /*
 */
+
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
 
 mongoose.Promise = bluebird;
 const isDev = process.env.NODE_ENV === 'development';
@@ -35,6 +37,7 @@ class App {
     private initMW() {
         this.app.set('env', this.env);
 
+        let swaggerDocument = YAML.load('./swagger.yml');
         passportConfig();
 
         this.app.enable("trust proxy");
@@ -55,6 +58,14 @@ class App {
         this.app.use(expressValidator());
         this.app.use(passport.initialize());
         this.app.use(passport.session());
+        this.app.use('/api-docs',
+            (req, res, next) => {swaggerDocument = YAML.load('./swagger.yml'); next();},
+            swaggerUi.serve,
+            (req, res, next) => {
+                swaggerUi.setup(swaggerDocument)(req, res, next);
+            }
+        );
+
         this.app.disable('x-powered-by');
         this.app.use(isDev ? errorHandler() : prodErrorHandler);
 

@@ -63,7 +63,7 @@ export default class UserController implements Controller {
                 {new: true}
             );
             if (!user) {
-                return res.status(403).end();
+                return res.status(400).end();
             }
             return res.json(user.toJSON());
         } catch (e) {
@@ -77,10 +77,10 @@ export default class UserController implements Controller {
             console.log('deleting user ', id, req.user._id.toString(), typeof (req.user._id.toString()));
             if (req.user._id.equals(id)) {
                 // Disallow deleting myself
-                return res.status(403).end();
+                return res.status(400).end();
             }
             await User.findOneAndRemove({company: req.user.company, _id: id});
-            return res.status(200).end();
+            return res.json({success: true});
         } catch (e) {
             next(e);
         }
