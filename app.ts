@@ -42,7 +42,7 @@ class App {
 
         this.app.enable("trust proxy");
         this.app.use(require('express-status-monitor')());
-        this.app.use(logger('dev'));
+        this.app.use(logger('common'));
         this.app.use(session({
             store: new RedisStore({
                 host: this.env.REDIS_HOST,
@@ -58,6 +58,24 @@ class App {
         this.app.use(expressValidator());
         this.app.use(passport.initialize());
         this.app.use(passport.session());
+        this.app.use(function (req, res, next) {
+
+            // Website you wish to allow to connect
+            res.setHeader('Access-Control-Allow-Origin', '*');
+
+            // Request methods you wish to allow
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+            // Request headers you wish to allow
+            res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+            // Set to true if you need the website to include cookies in the requests sent
+            // to the API (e.g. in case you use sessions)
+            res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+            // Pass to next layer of middleware
+            next();
+        });
         this.app.use('/api-docs',
             (req, res, next) => {swaggerDocument = YAML.load('./swagger.yml'); next();},
             swaggerUi.serve,

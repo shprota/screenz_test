@@ -9,7 +9,7 @@ info:
 servers:
   - url: http://screenz.shprota.com/api
     description: Example cloud server
-  - url: http://localhost:3000/api
+  - url: http://localhost:3001/api
     description: Locally running server
 tags:
   - name: "auth"
